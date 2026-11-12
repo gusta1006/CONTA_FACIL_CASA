@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10251f">
+  <meta name="description" content="CONTA FÁCIL — controle simples de receitas e despesas.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; upgrade-insecure-requests">
+  <title>CONTA FÁCIL</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="CONTA FÁCIL início"><span class="brand-icon">CF</span><span><strong>CONTA FÁCIL</strong><small>CONTROLE FINANCEIRO</small></span></a>
+      <div class="today" id="todayLabel"></div>
+    </header>
+
+    <main id="inicio">
+      <section class="intro">
+        <div><p class="eyebrow">SIMPLES E DIRETO</p><h1>Seu dinheiro, <span>sob controle.</span></h1><p>Registre o que entra e o que sai. O CONTA FÁCIL faz as contas para você.</p></div>
+      </section>
+
+      <nav class="tabs" aria-label="Seções do sistema">
+        <button class="tab active" type="button" data-tab="lancamentos">＋ Lançamentos</button>
+        <button class="tab" type="button" data-tab="relatorios">▥ Relatórios</button>
+      </nav>
+
+      <section class="tab-panel active" id="lancamentosPanel" data-panel="lancamentos">
+        <div class="summary-grid">
+          <article class="summary-card"><span>RECEITAS DO MÊS</span><strong id="incomeTotal">R$ 0,00</strong></article>
+          <article class="summary-card"><span>DESPESAS DO MÊS</span><strong id="expenseTotal">R$ 0,00</strong></article>
+          <article class="summary-card balance"><span>SALDO DO MÊS</span><strong id="balanceTotal">R$ 0,00</strong></article>
+        </div>
+
+        <section class="panel">
+          <div class="panel-title"><div><p class="eyebrow">NOVO REGISTRO</p><h2>Adicionar lançamento</h2></div><span class="title-icon">＋</span></div>
+          <form id="transactionForm" novalidate>
+            <div class="form-grid">
+              <label>O que deseja registrar?
+                <select id="type"><option value="expense">Despesa</option><option value="income">Receita</option></select>
+              </label>
+              <label>Valor (R$)
+                <input id="amount" type="number" min="0.01" max="1000000000" step="0.01" inputmode="decimal" placeholder="Ex.: 150,00" required>
+              </label>
+              <label class="wide">Categoria
+                <select id="category" required></select>
+              </label>
+              <label class="wide">Descrição <span class="optional">(opcional)</span>
+                <input id="description" type="text" maxlength="70" placeholder="Ex.: compra do supermercado">
+              </label>
+              <label>Data
+                <input id="date" type="date" required>
+              </label>
+            </div>
+            <div class="form-actions"><button class="primary-button" type="submit" id="submitButton">Salvar lançamento</button><span class="form-hint">Os gráficos serão atualizados automaticamente.</span></div>
+          </form>
+        </section>
+
+        <section class="panel category-manager">
+          <div class="panel-title"><div><p class="eyebrow">PERSONALIZE</p><h2>Minhas categorias</h2><p class="muted">As categorias comuns já estão prontas. Você também pode criar outras.</p></div></div>
+          <form id="categoryForm" class="category-form" novalidate>
+            <label class="sr-only" for="newCategory">Nome da nova categoria</label>
+            <input id="newCategory" type="text" maxlength="35" placeholder="Digite uma nova categoria..." required>
+            <button class="secondary-button" type="submit">＋ Adicionar categoria</button>
+          </form>
+          <div id="categoryChips" class="category-chips" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title list-title"><div><p class="eyebrow">HISTÓRICO</p><h2>Últimos lançamentos</h2></div><span id="transactionCount" class="count">0 registros</span></div>
+          <div id="transactionList" class="transaction-list"><p class="empty">Nenhum lançamento cadastrado ainda.</p></div>
+        </section>
+        <div class="backup-row"><button type="button" class="text-button" id="backupButton">↓ Fazer backup dos dados</button><span id="storageNote">Dados salvos neste navegador.</span></div>
+      </section>
+
+      <section class="tab-panel" id="relatoriosPanel" data-panel="relatorios" hidden>
+        <div class="report-heading"><div><p class="eyebrow">ACOMPANHAMENTO</p><h2>Relatórios financeiros</h2><p class="muted">Veja para onde seu dinheiro está indo.</p></div></div>
+        <section class="panel report-panel">
+          <div class="report-title"><div><p class="eyebrow">VISÃO MENSAL</p><h3>Despesas por categoria</h3><p class="muted">Gráfico de pizza do mês selecionado.</p></div><label class="picker-label">Mês<input id="monthPicker" type="month"></label></div>
+          <div class="pie-layout"><div id="monthlyPie" class="pie-chart" role="img" aria-label="Gráfico de pizza das despesas do mês"><span>Sem dados</span></div><div id="pieLegend" class="legend"><p class="empty">Cadastre despesas para visualizar o gráfico.</p></div></div>
+          <div class="chart-total"><span>Total de despesas no mês</span><strong id="pieTotal">R$ 0,00</strong></div>
+        </section>
+
+        <section class="panel report-panel">
+          <div class="report-title"><div><p class="eyebrow">VISÃO ANUAL</p><h3>Despesas mês a mês</h3><p class="muted">Gráfico de barras com o total gasto em cada mês.</p></div><label class="picker-label">Ano<select id="yearPicker"></select></label></div>
+          <div id="annualBars" class="bar-chart" role="img" aria-label="Gráfico de barras das despesas por mês"></div>
+          <div class="chart-total"><span>Total de despesas no ano</span><strong id="annualTotal">R$ 0,00</strong></div>
+        </section>
+      </section>
+    </main>
+    <footer>© <span id="yearNow"></span> CONTA FÁCIL · Organização financeira sem complicação.</footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
